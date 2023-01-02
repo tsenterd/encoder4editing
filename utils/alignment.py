@@ -14,7 +14,8 @@ def get_landmark(filepath, predictor):
 
     img = dlib.load_rgb_image(filepath)
     dets = detector(img, 1)
-    shape = (68, 2) # default
+    if len(dets) == 0:
+      return np.array([])
     for k, d in enumerate(dets):
         shape = predictor(img, d)
 
@@ -32,7 +33,11 @@ def align_face(filepath, predictor):
     :return: PIL Image
     """
 
+    # read image
+    img = PIL.Image.open(filepath)
     lm = get_landmark(filepath, predictor)
+    if len(lm) == 0:
+      return img
 
     lm_chin = lm[0: 17]  # left-right
     lm_eyebrow_left = lm[17: 22]  # left-right
@@ -62,9 +67,6 @@ def align_face(filepath, predictor):
     c = eye_avg + eye_to_mouth * 0.1
     quad = np.stack([c - x - y, c - x + y, c + x + y, c + x - y])
     qsize = np.hypot(*x) * 2
-
-    # read image
-    img = PIL.Image.open(filepath)
 
     output_size = 256
     transform_size = 256
