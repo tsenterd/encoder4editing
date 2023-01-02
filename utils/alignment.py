@@ -14,7 +14,7 @@ def get_landmark(filepath, predictor):
 
     img = dlib.load_rgb_image(filepath)
     dets = detector(img, 1)
-
+    shape = (68, 2) # default
     for k, d in enumerate(dets):
         shape = predictor(img, d)
 
